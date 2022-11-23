@@ -1,2 +1,28 @@
 ---
-# tasks file for agent_setup
+- name: Provide a compatable version of libssl (fedora)
+  yum:
+    name:
+      - openssl1.1
+    state: latest 
+  when:
+    - "ansible_facts['distribution'] in ['Fedora']"
+    - "ansible_facts['distribution_major_version'] in ['36','37']"
+- name: Provide a compatable version of libssl (fedora)
+  yum:
+    name:
+      - compat-openssl11
+    state: latest 
+  when:
+    - "ansible_facts['distribution'] in ['RedHat','CentOS','Rocky']"
+    - "ansible_facts['distribution_major_version'] in ['8','9']"
+- name: Populate service facts
+  ansible.builtin.service_facts:
+- name: Match services running from that folder 
+  shell: |
+    cat $(systemctl show -P FragmentPath {{ svc }}) | grep ExecStart | cut -f 2 -d '=' | head -n 1 | xargs dirname
+  loop: "{{ ansible_facts.services.keys() | select('search','^actions.runner') | list }}"
+  loop_control:
+    loop_var: svc
+  register: github_actions_service_home_folders
+- debug:
+    msg: "{{ github_actions_service_home_folders }}"
