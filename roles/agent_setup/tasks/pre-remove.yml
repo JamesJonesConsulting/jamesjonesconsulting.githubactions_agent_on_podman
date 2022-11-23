@@ -1,0 +1,17 @@
+---
+- set_fact:
+    github_actions_agent_working_dir: "{{ github_actions_agent_base_folder }}/{{ agent.folder }}"
+# - name: Agent exists and needs to be uninstalled
+#   block:
+#     - name: Uninstall the agent 
+#       ansible.builtin.include_role:
+#         name: jamesjonesconsulting.azuredevops_agent_fixes.agent_remove
+#       vars:
+#         github_actions_username: "{{ agent.username }}"
+#         github_actions_systemd_service_name: "{{ github_actions_service_home_folders.results | selectattr('stdout', 'equalto', github_actions_agent_working_dir) | map(attribute='stdout') | flatten | list | first }}"
+#   when:
+#     - "github_actions_service_home_folders.results | selectattr('stdout', 'equalto', github_actions_agent_working_dir) | map(attribute='stdout') | flatten | list | count"
+- name: Ensure the directory does not exist 
+  file:
+    path: "{{ github_actions_agent_working_dir }}"
+    state: absent
