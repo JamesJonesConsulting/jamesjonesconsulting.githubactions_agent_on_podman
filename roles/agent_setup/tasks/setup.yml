@@ -7,7 +7,7 @@
 #     podman_users:
 #       - "{{ agent.username }}"
 - set_fact:
-    github_actions_agent_working_dir: "{{ github_actions_agent_base_folder }}/{{ agent.folder }}"
+    github_actions_agent_working_dir: "{{ github_actions_agent_base_folder }}/{{ agent.name }}"
 - name: Create directory for the agent
   file:
     path: "{{ github_actions_agent_working_dir }}"
@@ -33,7 +33,7 @@
   vars:
     opts:
       - "--unattended"
-      - "--name {{ agent.folder | basename }}"
+      - "--name {{ agent.name }}"
       - "--url {{ github_actions_agent_url }}"
       - "--token {{ github_actions_agent_registration_token }}"
       - "--replace"
