@@ -1,2 +1,13 @@
 ---
-# defaults file for agent_setup
+github_actions_agents: []
+github_actions_agent_podman_group: docker
+github_actions_agent_url: https://github.com/SomeOrganization
+github_actions_agent_registration_token: abcdefghijklmnopqrstuvwxyz
+github_actions_agent_tags: []
+github_actions_agent_base_folder: /opt/actions-runners
+github_actions_agent_environment:
+  AZP_AGENT_USE_LEGACY_HTTP: 'true'
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+  DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
+  DOCKER_HOST: unix:///run/podman/podman.sock
+
