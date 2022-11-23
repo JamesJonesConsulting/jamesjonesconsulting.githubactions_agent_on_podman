@@ -25,24 +25,21 @@
   shell: "bin/installdependencies.sh"
   args:
     chdir: "{{ github_actions_agent_working_dir }}"
-# - name: Configure the install of the github_actions agent 
-#   command: "./config.sh {{ opts | join(' ') }}"
-#   become: true
-#   become_user: "{{ agent.username }}"
-#   environment: "{{ github_actions_agent_environment }}"
-#   vars:
-#     opts:
-#       - "--unattended"
-#       - "--acceptTeeEula"
-#       - "--agent {{ agent.folder | basename }}"
-#       - "--url {{ github_actions_agent_url }}"
-#       - "--auth PAT"
-#       - "--token {{ github_actions_agent_registration_token }}"
-#       - "--pool {{ agent.pool }}"
-#       - "--replace"
-#       - "--work {{ github_actions_agent_working_dir }}"
-#   args:
-#     chdir: "{{ github_actions_agent_working_dir }}"
+- name: Configure the install of the github_actions agent 
+  command: "./config.sh {{ opts | join(' ') }}"
+  become: true
+  become_user: "{{ agent.username }}"
+  environment: "{{ github_actions_agent_environment }}"
+  vars:
+    opts:
+      - "--unattended"
+      - "--name {{ agent.folder | basename }}"
+      - "--url {{ github_actions_agent_url }}"
+      - "--token {{ github_actions_agent_registration_token }}"
+      - "--replace"
+      - "--work {{ github_actions_agent_working_dir }}"
+  args:
+    chdir: "{{ github_actions_agent_working_dir }}"
 # - name: Update the environment file 
 #   community.general.ini_file:
 #     path: "{{ github_actions_agent_working_dir }}/.env"
@@ -53,26 +50,26 @@
 #   loop: "{{ github_actions_agent_environment | dict2items }}"
 #   loop_control:
 #     loop_var: cnf
-# - name: Install the service 
-#   command: "./svc.sh {{ cmd }}"
-#   loop:
-#     - install
-#   loop_control:
-#     loop_var: cmd
-#   args:
-#     chdir: "{{ github_actions_agent_working_dir }}"
-# - name: Reload systemd 
-#   ansible.builtin.systemd:
-#     daemon_reload: yes
-# - name: Populate service facts
-#   ansible.builtin.service_facts:
-# - name: Match services running from that folder 
-#   shell: |
-#     cat $(systemctl show -P FragmentPath {{ svc }}) | grep ExecStart | cut -f 2 -d '=' | head -n 1 | xargs dirname
-#   loop: "{{ ansible_facts.services.keys() | select('search','^actions.runner') | list }}"
-#   loop_control:
-#     loop_var: svc
-#   register: github_actions_service_home_folders
+- name: Install the service 
+  command: "./svc.sh {{ cmd }}"
+  loop:
+    - install
+  loop_control:
+    loop_var: cmd
+  args:
+    chdir: "{{ github_actions_agent_working_dir }}"
+- name: Reload systemd 
+  ansible.builtin.systemd:
+    daemon_reload: yes
+- name: Populate service facts
+  ansible.builtin.service_facts:
+- name: Match services running from that folder 
+  shell: |
+    cat $(systemctl show -P FragmentPath {{ svc }}) | grep ExecStart | cut -f 2 -d '=' | head -n 1 | xargs dirname
+  loop: "{{ ansible_facts.services.keys() | select('search','^actions.runner') | list }}"
+  loop_control:
+    loop_var: svc
+  register: github_actions_service_home_folders
 # - block:
 #     - name: Ensure Azure DevOps agent overlay directory exists
 #       file:
@@ -87,13 +84,13 @@
 #         daemon_reload: yes
 #   vars:
 #     github_actions_systemd_service_name: "{{ github_actions_service_home_folders.results | selectattr('stdout', 'equalto', github_actions_agent_working_dir) | map(attribute='svc') | flatten | list | first }}"
-# - name: Start the service 
-#   command: "./svc.sh {{ cmd }}"
-#   loop:
-#     - start
-#   loop_control:
-#     loop_var: cmd
-#   args:
-#     chdir: "{{ github_actions_agent_working_dir }}"
+- name: Start the service 
+  command: "./svc.sh {{ cmd }}"
+  loop:
+    - start
+  loop_control:
+    loop_var: cmd
+  args:
+    chdir: "{{ github_actions_agent_working_dir }}"
 
 

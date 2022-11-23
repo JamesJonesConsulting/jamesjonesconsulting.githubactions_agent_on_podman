@@ -1,0 +1,26 @@
+---
+- name: Stop and uninstall the service 
+  command: "./svc.sh {{ cmd }}"
+  loop:
+    - stop
+    - uninstall
+  loop_control:
+    loop_var: cmd
+  args:
+    chdir: "{{ github_actions_agent_working_dir }}"
+# - name: Remove the service overlay directory 
+#   file:
+#     path: "/etc/systemd/system/{{ github_actions_systemd_service_name }}.d"
+#     state: absent
+- name: Unconfigure the existing agent
+  command: "./config.sh remove --unattended --token {{ github_actions_agent_registration_token }}"
+  become: true
+  become_user: "{{ github_actions_username }}"
+  environment: "{{ github_actions_agent_environment }}"
+  ignore_errors: true
+  args:
+    chdir: "{{ github_actions_agent_working_dir }}"
+- name: Ensure the directory does not exist 
+  file:
+    path: "{{ github_actions_agent_working_dir }}"
+    state: absent
