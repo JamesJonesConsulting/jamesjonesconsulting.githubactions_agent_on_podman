@@ -15,6 +15,13 @@
   when:
     - "ansible_facts['distribution'] in ['RedHat','CentOS','Rocky']"
     - "ansible_facts['distribution_major_version'] in ['8','9']"
+- name: Add Dotnet 6 so the agent can communicate properly
+  yum:
+    name: dotnet-sdk-6.0
+    state: latest
+  when:
+    - "ansible_facts['distribution'] in ['Fedora']"
+    - "ansible_facts['distribution_major_version'] in ['36','37']"
 - name: Populate service facts
   ansible.builtin.service_facts:
 - name: Match services running from that folder 
