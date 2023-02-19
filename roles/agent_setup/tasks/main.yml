@@ -22,6 +22,20 @@
   when:
     - "ansible_facts['distribution'] in ['Fedora']"
     - "ansible_facts['distribution_major_version'] in ['36','37']"
+- name: Ensure the externals symlink cron job is in place for podman
+  ansible.builtin.copy:
+    src: files/fixexternalsymboliclinkonupgrade.sh
+    dest: /usr/local/bin/fixexternalsymboliclinkonupgrade.sh
+    mode: 0755
+- name: Setup the cron job to run every 5 minutes
+  ansible.builtin.cron:
+- name: Ensure a job that runs at 2 and 5 exists. Creates an entry like "0 5,2 * * ls -alh > /dev/null"
+  ansible.builtin.cron:
+    name: "Fix externals symbolic links on GitHub action agent upgrade"
+    minute: "*/5"
+    user: root
+    job: "/usr/local/bin/fixexternalsymboliclinkonupgrade.sh"
+    cron_file: fixexternalsymboliclinkonupgrade
 - name: Populate service facts
   ansible.builtin.service_facts:
 - name: Match services running from that folder 
