@@ -27,6 +27,10 @@
     src: files/fixexternalsymboliclinkonupgrade.sh
     dest: /usr/local/bin/fixexternalsymboliclinkonupgrade.sh
     mode: 0755
+- name: Ensure cronie is installed
+  ansible.builtin.yum:
+    name: cronie
+    state: present
 - name: Setup the cron job to run every 5 minutes
   ansible.builtin.cron:
     name: "Fix externals symbolic links on GitHub action agent upgrade"
